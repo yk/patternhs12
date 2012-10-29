@@ -5,13 +5,13 @@ from scipy.cluster.vq import kmeans2
 from scipy.io.matlab.mio import loadmat
 from numpy import sum
 
-class Gaussian:
-    def __init__(self, mean, covm):
-        self.mean = mean
-        self.covm = covm
-    def getP(self, sample):
-        prob = mulnormpdf(sample, self.mean, self.covm)
-        return prob
+#class Gaussian:
+#    def __init__(self, mean, covm):
+#        self.mean = mean
+#        self.covm = covm
+#    def getP(self, sample):
+#        prob = mulnormpdf(sample, self.mean, self.covm)
+#        return prob
 
 class GaussianMM:
     def __init__(self, mean):
@@ -30,7 +30,7 @@ def gmmEM(data, K, it):
         gausses = ndarray((K, N), dtype='float64')
         for k in range(0, K):
             #gauss = Gaussian(gmm.mean[k], gmm.covm[k])
-            gausses[k, :] = mulnormpdf(data, gmm.mean[k], gmm.covm[k])
+            gausses[k, :] = gmm.c[k]*mulnormpdf(data, gmm.mean[k], gmm.covm[k])
         sums = sum(gausses, axis=0)
         gausses /= sums
         # m step
@@ -44,6 +44,6 @@ def gmmEM(data, K, it):
     return gmm
 
 if __name__ == '__main__':
-    data = loadmat('../ex1/data/skin.mat')['sdata'].reshape((-1, 3))
+    data = loadmat('data/skin.mat')['sdata'].reshape((-1, 3))
     gmm = gmmEM(data,3,1)
     #em(data,3,max_iter=2)
