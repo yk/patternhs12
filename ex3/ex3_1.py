@@ -1,9 +1,9 @@
-from numpy.core.numeric import asarray, identity, ndarray
+from numpy import *
+from numpy.core.numeric import asarray, identity, ndarray, zeros
 from numpy.ma.extras import dot
-from pypr.clustering.gmm import mulnormpdf
+from pypr.clustering.gmm import mulnormpdf, logmulnormpdf
 from scipy.cluster.vq import kmeans2
 from scipy.io.matlab.mio import loadmat
-from numpy import sum
 
 #class Gaussian:
 #    def __init__(self, mean, covm):
@@ -19,6 +19,18 @@ class GaussianMM:
         self.N, self.dim = mean.shape
         self.covm = asarray([identity(self.dim)] * self.N)
         self.c = asarray([1.0 / self.N] * self.N)
+    
+    def getP(self,sample):
+        p = ndarray((sample.shape[0]))
+        for k in range(0,self.N):
+            p += self.c[k]*mulnormpdf(sample, self.mean[k], self.covm[k])
+        return p
+    
+    def getLogP(self,sample):
+        p = zeros((sample.shape[0]))
+        for k in range(0,self.N):
+            p += self.c[k]*logmulnormpdf(sample, self.mean[k], self.covm[k])
+        return p
 
 def gmmEM(data, K, it):
     centroid = kmeans2(data, K)[0]
@@ -29,18 +41,17 @@ def gmmEM(data, K, it):
         # e-step
         gausses = ndarray((K, N), dtype='float64')
         for k in range(0, K):
-            #gauss = Gaussian(gmm.mean[k], gmm.covm[k])
-            gausses[k, :] = gmm.c[k]*mulnormpdf(data, gmm.mean[k], gmm.covm[k])
+            gausses[k] = gmm.c[k]*mulnormpdf(data, gmm.mean[k], gmm.covm[k])
         sums = sum(gausses, axis=0)
         gausses /= sums
         # m step
+        sg = sum(gausses, axis=1)
+        gmm.c = ones(sg.shape) / N * sg
         for k in range(0, K):
-            sgk = sum(gausses[k, :])
-            gmm.c[k] = 1.0 / N * sgk
-            gmm.mean[k] = sum(data * gausses[k].reshape((-1,1)), axis=0) / sgk
+            gmm.mean[k] = sum(data * gausses[k].reshape((-1,1)), axis=0) / sg[k]
             d = data - gmm.mean[k]
-            d1 = gausses[k]*d.reshape((3,-1))
-            gmm.covm[k] = dot(d1, d) / sgk
+            d1 = d.transpose()*gausses[k]
+            gmm.covm[k]=dot(d1,d)/sg[k]
     return gmm
 
 if __name__ == '__main__':
