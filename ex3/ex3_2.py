@@ -47,14 +47,14 @@ if __name__ == '__main__':
     #for sample in img:
         #gmmskin.getLogP(sample)
     skinp, nonskinp = gmmskin.getP(img), gmmnonskin.getP(img)
-    res = (skinp > nonskinp)
+    res = skinp > nonskinp
     res = res.reshape((imshape[0],imshape[1]))
     res = logical_not(res)
     
     gt = GroundTruth('data/mask.png')
     fp, tp = gt.checkClassification(res)
-    print "false positive ratio: ", fp*1.0/count_nonzero(logical_not(res))
-    print "true positive ratio: ", tp*1.0/count_nonzero(res)
+    print "false positive ratio: ", fp*1.0/gt.negatives
+    print "true positive ratio: ", tp*1.0/gt.positives
     
     res = getBlackWhiteFromBinary(res)
     pylab.figure()
