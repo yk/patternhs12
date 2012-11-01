@@ -62,6 +62,7 @@ def gmmEM(data, K, it,show=False,usekmeans=True):
     gmm = GaussianMM(centroid)
     if show: gmm.draw(data)
     while it > 0:
+        print it," iterations remaining"
         it = it - 1
         # e-step
         gausses = zeros((K, N), dtype = data.dtype)
@@ -86,5 +87,5 @@ def gmmEM(data, K, it,show=False,usekmeans=True):
 
 if __name__ == '__main__':
     data = loadmat('data/gmmdata.mat')['gmmdata'].reshape((-1, 2))
-    gmm = gmmEM(data,3,10,True,False)
+    gmm = gmmEM(data,3,30,True,False)
     #em(data,3,max_iter=2)

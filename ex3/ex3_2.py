@@ -35,6 +35,7 @@ def getBlackWhiteFromBinary(img):
 
 if __name__ == '__main__':
     seterr(all='warn')
+    #pylab.ion()
     skindata, nonskindata = loadmat('data/skin.mat')['sdata'].reshape((-1, 3)).astype(float128), loadmat('data/nonskin.mat')['ndata'].reshape((-1, 3)).astype(float128)
     iters = 10
     show = False
@@ -57,6 +58,7 @@ if __name__ == '__main__':
     print "true positive ratio: ", tp*1.0/gt.positives
     
     res = getBlackWhiteFromBinary(res)
+    #pylab.ioff()
     pylab.figure()
     pylab.imshow(res)
     pylab.show()
