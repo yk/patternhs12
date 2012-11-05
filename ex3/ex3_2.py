@@ -23,11 +23,6 @@ class GroundTruth:
     def checkClassification(self,binary):
         fp = count_nonzero(logical_and(self.notMask, binary))
         tp = count_nonzero(logical_and(self.mask,binary))
-        #falsePosRate = fp/self.negatives
-        #falsePosRate = fp/(eps+count_nonzero(binary))
-        #truePosRate = tp/self.positives
-        #truePosRate = tp/(eps+count_nonzero(logical_not(binary)))
-        #return falsePosRate, truePosRate
         return fp,tp
 
 def getBlackWhiteFromBinary(img):
@@ -35,18 +30,14 @@ def getBlackWhiteFromBinary(img):
 
 if __name__ == '__main__':
     seterr(all='warn')
-    #pylab.ion()
     skindata, nonskindata = loadmat('data/skin.mat')['sdata'].reshape((-1, 3)).astype(float128), loadmat('data/nonskin.mat')['ndata'].reshape((-1, 3)).astype(float128)
     iters = 10
     show = False
     usekmeans = False
     gmmskin, gmmnonskin = gmmEM(skindata, 2, iters,show,usekmeans), gmmEM(nonskindata, 2, iters,show,usekmeans)
-    #g1,g2 = em(skindata,2,max_iter=1),em(nonskindata,2,max_iter=1)
     img = imread('data/image.png').astype(float128) / 255.0
     imshape = img.shape
     img = img.reshape((-1, 3))
-    #for sample in img:
-        #gmmskin.getLogP(sample)
     skinp, nonskinp = gmmskin.getP(img), gmmnonskin.getP(img)
     res = skinp > nonskinp
     res = res.reshape((imshape[0],imshape[1]))
@@ -58,7 +49,6 @@ if __name__ == '__main__':
     print "true positive ratio: ", tp*1.0/gt.positives
     
     res = getBlackWhiteFromBinary(res)
-    #pylab.ioff()
     pylab.figure()
     pylab.imshow(res)
     pylab.show()

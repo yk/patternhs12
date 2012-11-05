@@ -6,17 +6,7 @@ from numpy.oldnumeric.rng import random_sample
 from pypr.clustering.gmm import mulnormpdf, logmulnormpdf, gauss_ellipse_2d, gm_assign_to_cluster
 from scipy.cluster.vq import kmeans2
 from scipy.io.matlab.mio import loadmat
-import numpy
 import pylab
-#from numpy import *
-
-#class Gaussian:
-#    def __init__(self, mean, covm):
-#        self.mean = mean
-#        self.covm = covm
-#    def getP(self, sample):
-#        prob = mulnormpdf(sample, self.mean, self.covm)
-#        return prob
 
 class GaussianMM:
     def __init__(self, mean):
@@ -34,7 +24,6 @@ class GaussianMM:
     def draw(self,data):
         if self.dim == 2:
             fig = pylab.figure()
-            #ax = Axes(fig)
             ass = gm_assign_to_cluster(data,self.mean,self.covm,self.c)
             clrs = 'brgy'
             for i in range(self.N):
@@ -87,5 +76,4 @@ def gmmEM(data, K, it,show=False,usekmeans=True):
 
 if __name__ == '__main__':
     data = loadmat('data/gmmdata.mat')['gmmdata'].reshape((-1, 2))
-    gmm = gmmEM(data,3,30,True,False)
-    #em(data,3,max_iter=2)
+    gmm = gmmEM(data,3,30,show=True,usekmeans=True)
