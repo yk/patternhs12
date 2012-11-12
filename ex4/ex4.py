@@ -1,4 +1,4 @@
-from classifiers import DummyClassifier
+from classifiers import DummyClassifier, SumOfSquareErrorClassifier
 from numpy import float64
 from numpy.core.fromnumeric import transpose
 from numpy.core.numeric import count_nonzero
