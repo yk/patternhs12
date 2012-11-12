@@ -1,16 +1,12 @@
 from cvxopt.coneprog import qp
 from numpy import float64
-from numpy.core.fromnumeric import transpose, nonzero
-from numpy.core.numeric import ndarray, count_nonzero, ones, zeros, Inf, \
-    identity, inf, where
-from numpy.lib.shape_base import tile
-from numpy.lib.twodim_base import diag
-from numpy.ma.core import max
+from numpy.core.fromnumeric import transpose
+from numpy.core.numeric import count_nonzero, ndarray, ones, zeros, where
+from numpy.core.shape_base import hstack
+from numpy.linalg.linalg import pinv
 from numpy.ma.extras import dot
-from numpy.matrixlib.defmatrix import mat
 from openopt.oo import QP
 from openopt.solvers.CVXOPT.cvxopt_misc import matrix
-import numpy
 
 def calculateMisclassificationRate(ours, real):
     return 1.0 - count_nonzero(ours + real)*1.0 / ours.size
@@ -69,4 +65,16 @@ class LogisticRegressionClassifier(LinearClassifier):
     
     def train(self, data, labels):
         pass
+    
+class SumOfSquareErrorClassifier(LinearClassifier):
+    def classify(self, data):
+        t=dot(hstack((data, ones((data.shape[0],1)))),self.w)
+        return t>0
+    
+    def train(self, data, labels):
+        o=ones((data.shape[0],1))
+        h=hstack((data, o))
+        pseudoX=pinv(h)
+        self.w=dot(pseudoX, labels.reshape((-1,1)))
+
     
