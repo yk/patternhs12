@@ -1,5 +1,5 @@
 from cvxopt.coneprog import qp
-from numpy import float64
+from numpy import float64,int
 from numpy.core.fromnumeric import transpose
 from numpy.core.numeric import count_nonzero, ndarray, ones, zeros, where
 from numpy.core.shape_base import hstack
@@ -7,6 +7,7 @@ from numpy.linalg.linalg import pinv
 from numpy.ma.extras import dot
 from openopt.oo import QP
 from openopt.solvers.CVXOPT.cvxopt_misc import matrix
+from numpy.random import sample
 
 def calculateMisclassificationRate(ours, real):
     return 1.0 - count_nonzero(ours + real)*1.0 / ours.size
@@ -34,14 +35,18 @@ class DummyClassifier(LinearClassifier):
         return 0
 
 class SVMClassifier(LinearClassifier):
-    def __init__(self,C):
+    def __init__(self,C,limit=1000):
         self.C = C
+        self.limit = limit
         
     def classify(self, data):
         t = dot(data,self.w.reshape((-1,1))) + self.w0
         return t > 0
     
-    def train(self, data, labels):
+    def train(self, rawdata, rawlabels):
+        indArr = (sample(self.limit)*len(rawlabels)).astype(int) if len(rawlabels) > self.limit else range(len(rawlabels))
+        data = rawdata[indArr]
+        labels = rawlabels[indArr]
         l = labels.reshape((-1,1))
         xy = data * l
         H = dot(xy,transpose(xy))

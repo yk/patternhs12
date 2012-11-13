@@ -25,6 +25,6 @@ if __name__=='__main__':
     svm = SVMClassifier(C=15.0)
     micRate2 = doTest('toy',svm)
     print micRate2
-    svm2 = SVMClassifier(C=inf)
-    micRate3 = doTest('zip13',svm2)
+    svm2 = SVMClassifier(C=inf,limit=100)
+    micRate3 = doTest('skin',svm2)
     print micRate3
