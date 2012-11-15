@@ -58,6 +58,7 @@ class SVMClassifier(LinearClassifier):
         nonzeroindexes = where(r.xf>1e-4)[0]
         l1 = nonzeroindexes[0]
         self.w0 = 1.0/labels[l1]-dot(self.w,data[l1])
+        self.numSupportVectors = len(nonzeroindexes)
         
     
 class LogisticRegressionClassifier(LinearClassifier):
